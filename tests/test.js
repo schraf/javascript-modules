@@ -45,10 +45,10 @@ export class UnitTest {
     }
   }
 
-  run (stdout, stderr) {
+  async run (stdout, stderr) {
     try {
       const starttime = performance.now()
-      this.test()
+      await this.test()
       const endtime = performance.now()
       stdout(`[PASS] ${this.name} (${Math.floor((endtime - starttime) * 100) / 100} ms)`)
     } catch (e) {

@@ -1,7 +1,12 @@
 import * as BufferTests from './buffer_tests.js'
+import * as CompressTests from './compress_tests.js'
+import * as FileSystemTests from './fs_tests.js'
+import * as FloatTests from './float_tests.js'
 import * as HashTests from './hash_tests.js'
 import * as ObjectPoolTests from './objectpool_tests.js'
 import * as RandomTests from './random_tests.js'
+import * as TokenizerTests from './tokenizer_tests.js'
+import * as WASMTests from './wasm_tests.js'
 
 const output = document.getElementById('output')
 
@@ -20,18 +25,23 @@ function stderr (text) {
   output.appendChild(line)
 }
 
-function run (tests) {
+async function run (tests) {
   for (const TestClass of Object.values(tests)) {
     const test = new TestClass()
-    test.run(stdout, stderr)
+    await test.run(stdout, stderr)
   }
 }
 
-function main () {
-  run(BufferTests)
-  run(HashTests)
-  run(ObjectPoolTests)
-  run(RandomTests)
+async function main () {
+  await run(BufferTests)
+  await run(CompressTests)
+  await run(FileSystemTests)
+  await run(FloatTests)
+  await run(HashTests)
+  await run(ObjectPoolTests)
+  await run(RandomTests)
+  await run(TokenizerTests)
+  await run(WASMTests)
 }
 
 main()

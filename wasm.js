@@ -159,32 +159,42 @@ export class Module {
     this.exports = []
     this.codes = []
     this.datas = []
-  }
-
-  _functype (ret, params) {
-    const t = [0x60, ...vec(params), ...vec(ret === TYPE_NIL ? [] : [ret])]
-    let index = this.functypes.findIndex(x => x.every((y, i) => y === t[i]))
-
-    if (index === -1) {
-      index = this.functypes.push(t) - 1
-    }
-
-    return uint(index)
+    this.funcidx = 0
+    this.memidx = 0
+    this.globalidx = 0
   }
 
   importfunc (mod, name, ret, ...params) {
+    if (this.funcs.length > 0) {
+      throw new Error('all import functions must be added before module functions')
+    }
+
     const i = [...encodeName(mod), ...encodeName(name), 0x00, ...this._functype(ret, params)]
     this.imports.push(i)
+
+    return uint(this.funcidx++)
   }
 
   importmem (mod, name, minpages, maxpages) {
+    if (this.mem.length > 0) {
+      throw new Error('all import memory instances must be added before module memory instances')
+    }
+
     const i = [...encodeName(mod), ...encodeName(name), 0x02, 0x01, ...uint(minpages), ...uint(maxpages)]
     this.imports.push(i)
+
+    return uint(this.memidx++)
   }
 
   importglobal (mod, name, type, mutable) {
+    if (this.globals.length > 0) {
+      throw new Error('all import globals must be added before module globals')
+    }
+
     const i = [...encodeName(mod), ...encodeName(name), 0x03, type, mutable ? 0x01 : 0x00]
     this.imports.push(i)
+
+    return uint(this.globalidx++)
   }
 
   code () {
@@ -196,17 +206,20 @@ export class Module {
     const l = locals.reduce((acc, type) => acc.concat([...uint(1), type]), [])
     const c = [...vec(l, locals.length), ...code.inst, 0x0B]
     this.codes.push([uint(c.length), ...c])
-    return uint(this.funcs.push(f) - 1)
+    this.funcs.push(f)
+    return uint(this.funcidx++)
   }
 
   memory (minpages, maxpages) {
     const m = [0x01, ...uint(minpages), ...uint(maxpages)]
-    return uint(this.mem.push(m) - 1)
+    this.mem.push(m)
+    return uint(this.memidx++)
   }
 
   global (type, initial, mutable) {
     const g = [type, mutable ? 0x01 : 0x00, ...constant(type, initial), 0x0B]
-    return uint(this.globals.push(g) - 1)
+    this.globals.push(g)
+    return uint(this.globalidx++)
   }
 
   exportfunc (name, index) {
@@ -268,5 +281,16 @@ export class Module {
     }
 
     return Uint8Array.from(bytes).buffer
+  }
+
+  _functype (ret, params) {
+    const t = [0x60, ...vec(params), ...vec(ret === TYPE_NIL ? [] : [ret])]
+    let index = this.functypes.findIndex(x => x.every((y, i) => y === t[i]))
+
+    if (index === -1) {
+      index = this.functypes.push(t) - 1
+    }
+
+    return uint(index)
   }
 }

@@ -23,10 +23,12 @@ class Tokenizer {
           const match = line.match(re)
 
           if (match !== null) {
-            const token = func(match, linenu)
+            if (func) {
+              const token = func(match, linenu)
 
-            if (token) {
-              result.push(token)
+              if (token) {
+                result.push(token)
+              }
             }
 
             const length = match[0].length

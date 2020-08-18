@@ -1,19 +1,19 @@
 /* eslint-env browser */
 
 const validator = /^[A-Za-z0-9_.]+$/
-const storagekey = /^fs\.([A-Za-z0-9_.]+)$/
 const cache = new Map()
 const dirty = new Set()
+let drive = 'default'
 let flushtimer = -1
 
 class Storage {
   static store (name, buffer) {
     const array = new Uint8Array(buffer)
-    localStorage.setItem(`fs.${name}`, btoa(String.fromCharCode(...array)))
+    localStorage.setItem(`${drive}:${name}`, btoa(String.fromCharCode(...array)))
   }
 
   static fetch (name) {
-    const data = localStorage.getItem(`fs.${name}`)
+    const data = localStorage.getItem(`${drive}:${name}`)
 
     if (data !== null) {
       return Uint8Array.from(atob(data), ch => ch.charCodeAt(0))
@@ -23,11 +23,12 @@ class Storage {
   }
 
   static remove (name) {
-    localStorage.removeItem(`fs.${name}`)
+    localStorage.removeItem(`${drive}:${name}`)
   }
 
   static list () {
     const files = []
+    const storagekey = new RegExp(`^${drive}:([A-Za-z0-9_.]+)$`)
 
     for (let i = 0; i < localStorage.length; ++i) {
       const key = localStorage.key(i)
@@ -43,6 +44,7 @@ class Storage {
 
   static clear () {
     const files = []
+    const storagekey = new RegExp(`^${drive}:([A-Za-z0-9_.]+)$`)
 
     for (let i = 0; i < localStorage.length; ++i) {
       const key = localStorage.key(i)
@@ -54,6 +56,10 @@ class Storage {
 
     files.forEach(key => { localStorage.removeItem(key) })
   }
+}
+
+export function setdrive (name) {
+  drive = name
 }
 
 export function list () {
