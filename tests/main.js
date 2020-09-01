@@ -4,6 +4,7 @@ import * as FileSystemTests from './fs_tests.js'
 import * as FloatTests from './float_tests.js'
 import * as HashTests from './hash_tests.js'
 import * as ObjectPoolTests from './objectpool_tests.js'
+import * as ParserTests from './parser_tests.js'
 import * as RandomTests from './random_tests.js'
 import * as TokenizerTests from './tokenizer_tests.js'
 import * as WASMTests from './wasm_tests.js'
@@ -39,6 +40,7 @@ async function main () {
   await run(FloatTests)
   await run(HashTests)
   await run(ObjectPoolTests)
+  await run(ParserTests)
   await run(RandomTests)
   await run(TokenizerTests)
   await run(WASMTests)
