@@ -6,7 +6,7 @@ export class TestServiceWorker extends UnitTest {
     super('serviceworker')
   }
 
-  test () {
-	  // TODO
+  async test () {
+    this.assert(await ServiceWorker.register('/serviceworker.js'))
   }
 }

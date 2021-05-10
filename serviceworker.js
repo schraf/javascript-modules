@@ -16,13 +16,22 @@ class ServiceWorker {
     clients.claim()
   }
 
-  static async fetch (event) {
-    const result = await caches.match(event.request)
+  static async fetch (event, handler) {
+    let result = null
+
+    if (handler !== undefined) {
+      result = handler(event.request)
+    }
+
+    if (result === null) {
+      result = await caches.match(event.request)
+    }
+
     return result || fetch(event.request)
   }
 }
 
-export function init (version, assets) {
+export function init (version, assets, handler) {
   self.addEventListener('install', event => {
     event.waitUntil(ServiceWorker.install(version, assets))
   })
@@ -32,7 +41,7 @@ export function init (version, assets) {
   })
 
   self.addEventListener('fetch', event => {
-    event.respondWith(ServiceWorker.fetch(event))
+    event.respondWith(ServiceWorker.fetch(event, handler))
   })
 }
 
