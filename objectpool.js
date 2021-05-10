@@ -6,6 +6,7 @@ export class PooledObject {
   }
 
   init () { }
+
   released () { }
 
   release () {
