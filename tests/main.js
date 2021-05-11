@@ -1,6 +1,6 @@
 import * as BufferTests from './buffer_tests.js'
 import * as CompressTests from './compress_tests.js'
-import * as FileSystemTests from './fs_tests.js'
+import * as FileSystemTests from './filesystem_tests.js'
 import * as FloatTests from './float_tests.js'
 import * as HashTests from './hash_tests.js'
 import * as ObjectPoolTests from './objectpool_tests.js'
